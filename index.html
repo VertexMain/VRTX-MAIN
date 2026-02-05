@@ -3,1060 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VERTEX MAIN - Public GitHub Alternative</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>VERTEX MAIN - Public GitHub</title>
     <style>
-        :root {
-            --bg-dark: #000000;
-            --panel-bg: #0a0a0a;
-            --border: #1a1a1a;
-            --neon-green: #00ff9d;
-            --text-main: #e0e0e0;
-            --text-dim: #666;
-        }
-        
-        body {
-            margin: 0;
-            background: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'JetBrains Mono', monospace;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #000; 
+            color: #00ff9d; 
+            font-family: monospace; 
             height: 100vh;
             overflow: hidden;
         }
         
-        h1, h2, h3 {
-            font-family: 'Dela Gothic One', cursive;
-            color: var(--neon-green);
-        }
-        
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
         
         .btn {
-            background: transparent;
-            color: var(--neon-green);
-            border: 2px solid var(--neon-green);
+            background: #00ff9d;
+            color: #000;
+            border: none;
             padding: 10px 20px;
-            font-family: 'JetBrains Mono';
+            font-family: monospace;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            margin: 5px;
         }
         
-        .btn:hover {
-            background: var(--neon-green);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-green);
-        }
-        
-        /* Логин оверлей */
         #login-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: #000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 1000;
         }
         
         .login-box {
             text-align: center;
             padding: 40px;
-            border: 2px solid var(--neon-green);
-            background: rgba(10, 10, 10, 0.9);
-        }
-        
-        /* Регистрация репо - ПУБЛИЧНАЯ */
-        #repo-register-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10001;
-        }
-        
-        .register-box {
-            background: var(--panel-bg);
-            border: 2px solid var(--neon-green);
-            padding: 40px;
-            width: 500px;
-            max-width: 90%;
+            border: 2px solid #00ff9d;
         }
         
         .repo-input {
             width: 100%;
-            padding: 15px;
-            background: #000;
-            border: 1px solid var(--border);
-            color: var(--neon-green);
-            font-family: 'JetBrains Mono';
-            font-size: 1rem;
-            margin: 10px 0;
-        }
-        
-        .availability {
-            margin: 15px 0;
             padding: 10px;
             background: #111;
+            color: #00ff9d;
+            border: 1px solid #333;
+            margin: 10px 0;
+            font-family: monospace;
         }
         
-        .available {
-            color: var(--neon-green);
-        }
-        
-        .taken {
-            color: #ff4757;
-        }
-        
-        /* Основной интерфейс */
-        #app-container {
+        .main-area {
             display: flex;
             height: 100vh;
         }
         
         .sidebar {
             width: 250px;
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-info {
+            background: #111;
             padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--neon-green);
-        }
-        
-        .repo-list {
-            padding: 20px;
-            flex: 1;
             overflow-y: auto;
         }
         
         .repo-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            background: #111;
-            border: 1px solid var(--border);
+            background: #222;
+            padding: 10px;
+            margin: 5px 0;
             cursor: pointer;
         }
         
         .repo-item:hover {
-            border-color: var(--neon-green);
+            border-left: 3px solid #00ff9d;
         }
         
-        .repo-item.active {
-            border-color: var(--neon-green);
-            background: rgba(0, 255, 157, 0.1);
-        }
-        
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .navbar {
-            padding: 15px 30px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 10, 0.9);
-        }
-        
-        .logo {
-            font-family: 'Dela Gothic One';
-            color: var(--neon-green);
-            font-size: 1.5rem;
-            text-decoration: none;
-        }
-        
-        .editor-header {
-            padding: 15px 30px;
-            background: var(--panel-bg);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        #editor-wrapper {
-            flex: 1;
-            position: relative;
-        }
-        
-        #editor-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        
-        .file-tabs {
-            background: #111;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            padding: 0 10px;
-        }
-        
-        .file-tab {
-            padding: 12px 20px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-family: 'JetBrains Mono';
-        }
-        
-        .file-tab.active {
-            color: var(--neon-green);
-            border-bottom-color: var(--neon-green);
+        #editor {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            color: #00ff9d;
+            border: 1px solid #333;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
         }
         
         .terminal {
-            height: 200px;
             background: #000;
-            border-top: 2px solid var(--border);
+            border: 1px solid #333;
             padding: 15px;
-            color: var(--neon-green);
+            height: 150px;
             overflow-y: auto;
-            font-family: 'JetBrains Mono';
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-        }
-        
-        .status-bar {
-            padding: 10px 20px;
-            background: var(--panel-bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-        
-        .dashboard {
-            padding: 30px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .stat-card {
-            flex: 1;
-            padding: 20px;
-            background: #111;
-            border: 1px solid var(--border);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            color: var(--neon-green);
-            margin: 10px 0;
+            color: #00ff9d;
+            font-family: monospace;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Логин - ПРОСТО ВВОД ИМЕНИ -->
+    <!-- Простой логин -->
     <div id="login-overlay">
         <div class="login-box">
-            <h1 style="font-size: 3rem; margin-bottom: 20px;">VERTEX MAIN</h1>
-            <p style="color: var(--text-dim); margin-bottom: 30px;">PUBLIC GitHub Alternative</p>
-            
-            <div style="margin: 30px 0;">
-                <input type="text" id="username-input" class="repo-input" placeholder="Ваше имя (любое)">
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-top: 10px;">
-                    Имя для отображения, можно ввести любое
-                </p>
-            </div>
-            
-            <button class="btn" onclick="startWithUsername()">
-                <i class="fas fa-play"></i> НАЧАТЬ
+            <h1 style="font-size: 2.5rem; margin-bottom: 20px;">VERTEX MAIN</h1>
+            <input type="text" id="username-input" class="repo-input" placeholder="Твое имя" value="Гость">
+            <button class="btn" onclick="startApp()" style="margin-top: 20px;">
+                НАЧАТЬ
             </button>
-            
-            <p style="margin-top: 20px; color: var(--neon-green); font-size: 0.9rem;">
-                📢 ВСЕ РЕПОЗИТОРИИ ПУБЛИЧНЫЕ!<br>
-                Любой может посмотреть любой репозиторий
-            </p>
-        </div>
-    </div>
-
-    <!-- Регистрация репо - ПУБЛИЧНАЯ -->
-    <div id="repo-register-overlay" class="hidden">
-        <div class="register-box">
-            <h2>СОЗДАЙ ПУБЛИЧНЫЙ РЕПОЗИТОРИЙ</h2>
-            <p style="color: var(--text-dim); margin: 10px 0 20px;">
-                Выбери имя для репозитория. Он будет ПУБЛИЧНЫМ для всех!
-            </p>
-            
-            <input type="text" id="repo-name-input" class="repo-input" placeholder="my-project">
-            <div style="color: var(--text-dim); margin: 10px 0; font-size: 0.9rem;">
-                Публичный сайт: <span id="repo-preview" style="color: var(--neon-green);">vrtxmain.v6.rocks/имя</span>
-            </div>
-            
-            <div class="availability" id="repo-availability">
-                <i class="fas fa-circle"></i>
-                <span>Введи имя репозитория (3-20 символов)</span>
-            </div>
-            
-            <div style="margin: 20px 0; padding: 15px; background: rgba(0, 255, 157, 0.1); border-left: 3px solid var(--neon-green);">
-                <p style="color: var(--neon-green); margin: 0; font-size: 0.9rem;">
-                    ⚠️ ВНИМАНИЕ: Этот репозиторий будет ПУБЛИЧНЫМ!<br>
-                    Все пользователи увидят его в общем списке
-                </p>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn" onclick="registerRepo()" id="register-btn" disabled>
-                    <i class="fas fa-code-branch"></i> СОЗДАТЬ ПУБЛИЧНЫЙ РЕПО
-                </button>
-                <button class="btn" onclick="goBackToLogin()" style="border-color: #ff4757; color: #ff4757;">
-                    НАЗАД
-                </button>
-            </div>
         </div>
     </div>
 
     <!-- Основной интерфейс -->
     <div id="app-container" class="hidden">
-        <div class="navbar">
-            <a href="#" class="logo" onclick="showDashboard()">VERTEX</a>
-            <div>
-                <button class="btn" onclick="showAllRepos()" style="margin-right: 10px;">
-                    <i class="fas fa-globe"></i> ВСЕ РЕПО
-                </button>
-                <button class="btn" onclick="createNewRepo()">
-                    <i class="fas fa-plus"></i> НОВЫЙ РЕПО
-                </button>
-            </div>
+        <div style="padding: 15px; background: #111; border-bottom: 1px solid #333;">
+            <button class="btn" onclick="createRepo()">+ СОЗДАТЬ РЕПО</button>
+            <button class="btn" onclick="saveFile()">💾 СОХРАНИТЬ</button>
+            <button class="btn" onclick="deploy()">🚀 ДЕПЛОЙ</button>
+            <span style="margin-left: 20px; color: #666;" id="current-repo"></span>
         </div>
         
-        <div style="display: flex; flex: 1;">
-            <!-- Боковая панель -->
+        <div class="main-area">
+            <!-- Список репозиториев -->
             <div class="sidebar">
-                <div class="user-info">
-                    <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=333&color=00ff9d" class="user-avatar">
-                    <div>
-                        <div id="username-display" style="font-weight: bold;">Гость</div>
-                        <div id="user-repo" style="color: var(--neon-green); font-size: 0.8rem;">Публичный доступ</div>
-                    </div>
-                </div>
-                
-                <div class="repo-list">
-                    <h4 style="color: var(--text-dim); margin-bottom: 15px;">ВСЕ РЕПОЗИТОРИИ</h4>
-                    <div id="repositories-list">
-                        <!-- Все публичные репозитории здесь -->
-                    </div>
+                <h3>РЕПОЗИТОРИИ:</h3>
+                <div id="repos-list">
+                    <!-- Репо будут здесь -->
                 </div>
             </div>
             
-            <!-- Главный контент -->
-            <div class="main-content">
-                <!-- Дашборд -->
-                <div id="dashboard" class="dashboard">
-                    <h1>VERTEX MAIN - PUBLIC</h1>
-                    <p style="color: var(--text-dim); margin: 10px 0 30px;">
-                        📢 ПУБЛИЧНАЯ платформа GitHub Alternative с авто-деплоем
-                    </p>
-                    
-                    <div style="background: rgba(0, 255, 157, 0.1); border: 1px solid var(--neon-green); padding: 20px; margin: 20px 0;">
-                        <h3 style="color: var(--neon-green);"><i class="fas fa-bullhorn"></i> ВСЕ РЕПОЗИТОРИИ ПУБЛИЧНЫЕ!</h3>
-                        <p style="color: var(--text-main); margin: 10px 0;">
-                            • Любой может посмотреть любой репозиторий<br>
-                            • Любой может скопировать код<br>
-                            • Все сайты доступны публично<br>
-                            • Регистрация не требуется
-                        </p>
-                    </div>
-                    
-                    <div class="stats">
-                        <div class="stat-card">
-                            <h3>Репозитории</h3>
-                            <div class="stat-value" id="repo-count">0</div>
-                            <p style="color: var(--text-dim);">Всего публичных репо</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Деплои</h3>
-                            <div class="stat-value" id="deploy-count">0</div>
-                            <p style="color: var(--text-dim);">Всего деплоев</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Онлайн</h3>
-                            <div class="stat-value" id="online-count">1</div>
-                            <p style="color: var(--text-dim);">Пользователей онлайн</p>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 40px;">
-                        <h3>БЫСТРЫЕ ДЕЙСТВИЯ</h3>
-                        <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
-                            <button class="btn" onclick="createNewRepo()">
-                                <i class="fas fa-plus"></i> СОЗДАТЬ НОВЫЙ РЕПО
-                            </button>
-                            <button class="btn" onclick="showAllRepos()">
-                                <i class="fas fa-list"></i> ПОСМОТРЕТЬ ВСЕ РЕПО
-                            </button>
-                            <label class="btn" style="cursor: pointer;">
-                                <i class="fas fa-upload"></i> ЗАГРУЗИТЬ ФАЙЛЫ
-                                <input type="file" id="file-upload" multiple 
-                                       style="display: none;" onchange="uploadFiles(this.files)">
-                            </label>
-                        </div>
-                    </div>
-                </div>
+            <!-- Редактор -->
+            <div style="flex: 1; padding: 20px;">
+                <textarea id="editor" placeholder="Выберите или создайте репозиторий"></textarea>
                 
-                <!-- Редактор -->
-                <div id="editor-view" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
-                    <div class="editor-header">
-                        <div>
-                            <span style="color: var(--text-dim);">vrtxmain.v6.rocks/</span>
-                            <span id="current-repo-name" style="color: var(--neon-green);"></span>
-                            <span style="color: var(--text-dim);">/</span>
-                            <span id="file-name-display" style="color: var(--neon-green);">index.html</span>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn" onclick="saveFile()" id="save-btn">
-                                <i class="fas fa-save"></i> СОХРАНИТЬ
-                            </button>
-                            <button class="btn" onclick="triggerDeploy()" id="deploy-btn">
-                                <i class="fas fa-rocket"></i> ДЕПЛОЙ
-                            </button>
-                            <a href="#" id="live-site-link" target="_blank" style="text-decoration: none;">
-                                <button class="btn">
-                                    <i class="fas fa-external-link-alt"></i> ОТКРЫТЬ САЙТ
-                                </button>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="file-tabs" id="file-tabs-container">
-                        <!-- Табы файлов -->
-                    </div>
-                    
-                    <div id="editor-wrapper">
-                        <div id="editor-container"></div>
-                    </div>
-                    
-                    <div class="terminal" id="vrtx-term">
-[SYSTEM]: VERTEX MAIN PUBLIC CI/CD Bot запущен
-[SYSTEM]: 📢 ВСЕ РЕПОЗИТОРИИ ПУБЛИЧНЫЕ!
-[SYSTEM]: Домен: vrtxmain.v6.rocks/репозиторий
-                    </div>
-                    
-                    <div class="status-bar">
-                        <div>
-                            <span id="current-branch" style="color: var(--neon-green);">main</span>
-                            <span style="margin: 0 10px;">|</span>
-                            <span id="file-status">Сохранено</span>
-                        </div>
-                        <div>
-                            <span id="deploy-status">Последний деплой: Никогда</span>
-                        </div>
-                    </div>
+                <div class="terminal" id="terminal">
+[SYSTEM]: VERTEX MAIN запущен
+[SYSTEM]: Все сайты: vrtxmain.v6.rocks/репозиторий
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-
     <script>
-        // Firebase конфигурация - ПУБЛИЧНАЯ
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvCQnDWfR38gH6SOoyyxRenFWGE5RgnAU",
-            authDomain: "vertex-main-register.firebaseapp.com",
-            projectId: "vertex-main-register",
-            storageBucket: "vertex-main-register.firebasestorage.app",
-            messagingSenderId: "790052740688",
-            appId: "1:790052740688:web:218edfab89a4e46b9cbb55"
-        };
-
-        // Инициализация Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Глобальные переменные - ВСЁ ПУБЛИЧНОЕ
-        let currentUser = null;
+        // Глобальные переменные
+        let repos = {};
         let currentRepo = null;
-        let currentFile = 'index.html';
-        let repositories = [];
-        let files = {};
-        let editor = null;
         let username = "Гость";
         
-        // Все занятые имена репозиториев
-        let takenRepoNames = new Set();
-
-        // Инициализация при загрузке
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Инициализация редактора
-            editor = ace.edit("editor-container");
-            editor.setTheme("ace/theme/twilight");
-            editor.session.setMode("ace/mode/html");
-            editor.session.on('change', function() {
-                document.getElementById('file-status').textContent = 'Не сохранено';
-                document.getElementById('save-btn').innerHTML = '<i class="fas fa-save"></i> СОХРАНИТЬ*';
-            });
-            
-            // Загружаем ВСЕ публичные репозитории
-            await loadAllRepositories();
-        });
-
-        // Начать с имени пользователя
-        function startWithUsername() {
-            const nameInput = document.getElementById('username-input').value.trim();
-            if (nameInput) {
-                username = nameInput;
-            }
-            
-            document.getElementById('username-display').textContent = username;
-            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=333&color=00ff9d`;
-            
-            document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            showDashboard();
-        }
-
-        // Назад к логину
-        function goBackToLogin() {
-            document.getElementById('repo-register-overlay').classList.add('hidden');
-            document.getElementById('login-overlay').classList.remove('hidden');
-        }
-
-        // Загрузить ВСЕ публичные репозитории
-        async function loadAllRepositories() {
-            try {
-                const snapshot = await db.collection('repositories').get();
-                repositories = [];
-                takenRepoNames.clear();
-                
-                snapshot.forEach(doc => {
-                    const repoData = doc.data();
-                    repositories.push({
-                        id: doc.id,
-                        ...repoData
-                    });
-                    takenRepoNames.add(doc.id.toLowerCase());
-                });
-                
-                // Сортируем по дате создания (новые первые)
-                repositories.sort((a, b) => {
-                    const timeA = a.createdAt ? a.createdAt.toDate().getTime() : 0;
-                    const timeB = b.createdAt ? b.createdAt.toDate().getTime() : 0;
-                    return timeB - timeA;
-                });
-                
-                updateRepoList();
-                updateDashboardStats();
-                
-            } catch (error) {
-                console.log('Ошибка загрузки репозиториев:', error);
-                addToTerminal('[ERROR]: Не удалось загрузить репозитории');
-            }
-        }
-
-        // Проверка имени репозитория
-        document.getElementById('repo-name-input').addEventListener('input', function(e) {
-            let repoName = e.target.value.toLowerCase();
-            repoName = repoName.replace(/[^a-z0-9-]/g, '');
-            repoName = repoName.replace(/--+/g, '-');
-            if (repoName.startsWith('-')) repoName = repoName.substring(1);
-            if (repoName.endsWith('-')) repoName = repoName.slice(0, -1);
-            
-            document.getElementById('repo-name-input').value = repoName;
-            document.getElementById('repo-preview').textContent = `vrtxmain.v6.rocks/${repoName}`;
-            
-            const check = document.getElementById('repo-availability');
-            const btn = document.getElementById('register-btn');
-            
-            if (repoName.length < 3) {
-                check.innerHTML = '<i class="fas fa-times" style="color: #ff4757;"></i> Минимум 3 символа';
-                btn.disabled = true;
-                return;
-            }
-            
-            if (repoName.length > 20) {
-                check.innerHTML = '<i class="fas fa-times" style="color: #ff4757;"></i> Максимум 20 символов';
-                btn.disabled = true;
-                return;
-            }
-            
-            if (takenRepoNames.has(repoName)) {
-                check.innerHTML = '<i class="fas fa-times" style="color: #ff4757;"></i> Имя уже занято';
-                btn.disabled = true;
-            } else {
-                check.innerHTML = '<i class="fas fa-check" style="color: #00ff9d;"></i> Имя доступно!';
-                btn.disabled = false;
-            }
-        });
-
-        // Создать новый публичный репозиторий
-        function createNewRepo() {
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('repo-register-overlay').classList.remove('hidden');
-            document.getElementById('repo-preview').textContent = 'vrtxmain.v6.rocks/имя';
-            document.getElementById('repo-name-input').value = '';
-            document.getElementById('repo-availability').innerHTML = '<i class="fas fa-circle"></i> <span>Введи имя репозитория</span>';
-            document.getElementById('register-btn').disabled = true;
-        }
-
-        // Зарегистрировать публичный репозиторий
-        async function registerRepo() {
-            const repoName = document.getElementById('repo-name-input').value;
-            
-            if (!repoName || repoName.length < 3) {
-                alert('Имя репозитория должно быть минимум 3 символа');
-                return;
-            }
-            
-            if (takenRepoNames.has(repoName)) {
-                alert('Это имя репозитория уже занято');
-                return;
-            }
-            
-            try {
-                // Создаем публичный репозиторий
-                const defaultFiles = {
-                    'index.html': `<!DOCTYPE html>
-<html lang="en">
+        // Файлы по умолчанию
+        const defaultFiles = `<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${repoName} | VERTEX MAIN</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Мой сайт</title>
     <style>
         body { 
-            font-family: 'JetBrains Mono', monospace; 
-            margin: 0; 
-            padding: 40px; 
+            font-family: monospace; 
             background: #000; 
             color: #00ff9d;
+            padding: 40px;
             text-align: center;
-        }
-        h1 { color: #00ff9d; margin-bottom: 20px; }
-        p { color: #666; line-height: 1.6; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .neon-box { 
-            border: 2px solid #00ff9d; 
-            padding: 30px; 
-            margin: 30px 0; 
-            box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 ${repoName}</h1>
-        <div class="neon-box">
-            <p>Публичный сайт на <strong>VERTEX MAIN</strong></p>
-            <p>Адрес: <strong>vrtxmain.v6.rocks/${repoName}</strong></p>
-            <p>Создано пользователем: ${username}</p>
-            <p>Редактируйте этот файл, чтобы изменить контент</p>
-        </div>
-        <p>📢 Этот репозиторий ПУБЛИЧНЫЙ для всех</p>
-    </div>
+    <h1>🚀 VERTEX MAIN</h1>
+    <p>Мой сайт работает!</p>
 </body>
-</html>`,
-                    'style.css': `/* Стили для ${repoName} */
-body {
-    font-family: 'JetBrains Mono', monospace;
-    background: #0a0a0a;
-    color: #00ff9d;
-    margin: 0;
-    padding: 0;
-}
+</html>`;
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+        // Запуск приложения
+        function startApp() {
+            const nameInput = document.getElementById('username-input').value;
+            if (nameInput) username = nameInput;
+            
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            
+            // Загружаем сохраненные репозитории
+            loadRepos();
+            log('Привет, ' + username + '!');
+        }
 
-.neon-text {
-    color: #00ff9d;
-    text-shadow: 0 0 5px #00ff9d;
-}`,
-                    'script.js': `// JavaScript для ${repoName}
-console.log('Публичный сайт ${repoName} загружен!');
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Сайт доступен по адресу:', window.location.href);
-});`
-                };
-                
-                // Добавляем в Firebase - ПУБЛИЧНО
-                await db.collection('repositories').doc(repoName).set({
-                    name: repoName,
-                    owner: username,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    files: defaultFiles,
-                    lastDeployed: null,
-                    deployCount: 0,
-                    url: `vrtxmain.v6.rocks/${repoName}`,
-                    public: true,
-                    views: 0
-                });
-                
-                // Обновляем UI
-                document.getElementById('repo-register-overlay').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-                
-                // Перезагружаем все репозитории
-                await loadAllRepositories();
-                
-                // Открываем созданный репозиторий
-                const newRepo = repositories.find(r => r.id === repoName);
-                if (newRepo) {
-                    openRepository(newRepo);
-                }
-                
-                addToTerminal(`[PUBLIC]: Создан публичный репозиторий "${repoName}"`);
-                addToTerminal(`[PUBLIC]: Доступен всем по: vrtxmain.v6.rocks/${repoName}`);
-                
-            } catch (error) {
-                alert('Ошибка создания репозитория: ' + error.message);
+        // Создать репозиторий
+        function createRepo() {
+            const repoName = prompt('Имя репозитория (латинские буквы, цифры, дефисы):');
+            if (!repoName) return;
+            
+            // Проверяем имя
+            const cleanName = repoName.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            if (cleanName.length < 3) {
+                alert('Минимум 3 символа');
+                return;
             }
-        }
-
-        // Показать все репозитории
-        function showAllRepos() {
-            showDashboard();
-        }
-
-        // Обновление списка репозиториев
-        function updateRepoList() {
-            const list = document.getElementById('repositories-list');
-            list.innerHTML = '';
             
-            repositories.forEach(repo => {
-                const div = document.createElement('div');
-                div.className = 'repo-item';
-                if (currentRepo && currentRepo.id === repo.id) {
-                    div.classList.add('active');
-                }
-                
-                div.innerHTML = `
-                    <div style="font-weight: bold;">${repo.name}</div>
-                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
-                        <i class="fas fa-user"></i> ${repo.owner || 'Аноним'}
-                        <span style="margin: 0 5px;">•</span>
-                        <i class="fas fa-globe"></i> ${repo.url}
-                    </div>
-                `;
-                
-                div.onclick = () => openRepository(repo);
-                list.appendChild(div);
-            });
-        }
-
-        // Открытие репозитория
-        async function openRepository(repo) {
-            currentRepo = repo;
-            files = repo.files || {};
-            currentFile = 'index.html';
+            if (repos[cleanName]) {
+                alert('Репо уже существует');
+                return;
+            }
             
-            // Обновляем UI
-            updateRepoList();
-            document.getElementById('current-repo-name').textContent = repo.name;
-            document.getElementById('live-site-link').href = `/${repo.name}`;
-            document.getElementById('live-site-link').textContent = `🌐 Открыть ${repo.url}`;
-            
-            // Обновляем табы файлов
-            updateFileTabs();
-            
-            // Загружаем файл
-            loadFile(currentFile);
-            
-            // Показываем редактор
-            showEditorView();
-            
-            // Логируем
-            addToTerminal(`[OPEN]: Открыт публичный репозиторий "${repo.name}" от ${repo.owner}`);
-        }
-
-        // Обновление табов файлов
-        function updateFileTabs() {
-            const container = document.getElementById('file-tabs-container');
-            container.innerHTML = '';
-            
-            Object.keys(files).forEach(filename => {
-                const tab = document.createElement('div');
-                tab.className = 'file-tab';
-                if (filename === currentFile) {
-                    tab.classList.add('active');
-                }
-                
-                tab.innerHTML = filename;
-                tab.onclick = () => switchFile(filename);
-                container.appendChild(tab);
-            });
-        }
-
-        // Переключение файла
-        function switchFile(filename) {
-            saveCurrentFile();
-            currentFile = filename;
-            loadFile(filename);
-            updateFileTabs();
-            document.getElementById('file-name-display').textContent = filename;
-            
-            // Устанавливаем режим редактора
-            const ext = filename.split('.').pop();
-            const modeMap = {
-                'html': 'html',
-                'css': 'css',
-                'js': 'javascript',
-                'py': 'python',
-                'yml': 'yaml',
-                'json': 'json',
-                'md': 'markdown'
+            // Создаем репозиторий
+            repos[cleanName] = {
+                name: cleanName,
+                files: defaultFiles,
+                created: new Date().toLocaleString(),
+                owner: username,
+                url: `vrtxmain.v6.rocks/${cleanName}`
             };
-            editor.session.setMode(`ace/mode/${modeMap[ext] || 'text'}`);
+            
+            // Сохраняем
+            saveRepos();
+            
+            // Открываем
+            openRepo(cleanName);
+            
+            log(`Создан репозиторий: ${cleanName}`);
+            log(`Сайт будет: ${repos[cleanName].url}`);
         }
 
-        // Загрузка файла
-        function loadFile(filename) {
+        // Открыть репозиторий
+        function openRepo(repoName) {
+            currentRepo = repoName;
+            const repo = repos[repoName];
+            
+            document.getElementById('current-repo').textContent = `📁 ${repoName} | 👤 ${repo.owner}`;
+            document.getElementById('editor').value = repo.files;
+            
+            // Обновляем список
+            updateReposList();
+        }
+
+        // Сохранить файл
+        function saveFile() {
             if (!currentRepo) {
-                editor.setValue('// Выберите репозиторий из списка', -1);
+                alert('Сначала создайте репозиторий');
                 return;
             }
             
-            const content = files[filename] || '';
-            editor.setValue(content, -1);
-            document.getElementById('file-status').textContent = 'Загружено';
-            document.getElementById('save-btn').innerHTML = '<i class="fas fa-save"></i> СОХРАНИТЬ';
-        }
-
-        // Сохранение текущего файла
-        function saveCurrentFile() {
-            if (currentFile && currentRepo) {
-                files[currentFile] = editor.getValue();
-            }
-        }
-
-        // Сохранение файлов
-        async function saveFile() {
-            if (!currentRepo) {
-                addToTerminal('[ERROR]: Нет открытого репозитория');
-                return;
-            }
+            const content = document.getElementById('editor').value;
+            repos[currentRepo].files = content;
             
-            try {
-                saveCurrentFile();
-                
-                // Обновляем в Firebase - ПУБЛИЧНЫЙ доступ
-                await db.collection('repositories').doc(currentRepo.id).update({
-                    files: files,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedBy: username
-                });
-                
-                document.getElementById('file-status').textContent = 'Сохранено публично';
-                document.getElementById('save-btn').innerHTML = '<i class="fas fa-save"></i> СОХРАНИТЬ';
-                
-                addToTerminal(`[PUBLIC]: Файлы сохранены для "${currentRepo.name}"`);
-                addToTerminal(`[PUBLIC]: Все пользователи увидят изменения`);
-                
-            } catch (error) {
-                addToTerminal('[ERROR]: Ошибка сохранения: ' + error.message);
-            }
+            saveRepos();
+            log(`Сохранено: ${currentRepo}`);
         }
 
         // Деплой
-        async function triggerDeploy() {
+        function deploy() {
             if (!currentRepo) {
-                addToTerminal('[ERROR]: Нет открытого репозитория');
+                alert('Сначала создайте репозиторий');
                 return;
             }
             
-            const deployBtn = document.getElementById('deploy-btn');
-            const term = document.getElementById('vrtx-term');
+            saveFile();
             
-            // Сохраняем файлы
-            await saveFile();
+            const repo = repos[currentRepo];
             
-            // Обновляем UI
-            deployBtn.innerHTML = '<i class="fas fa-sync fa-spin"></i> ДЕПЛОЙ...';
-            deployBtn.disabled = true;
-            
-            addToTerminal(`[PUBLIC]: Начинаю деплой ${currentRepo.name}...`);
-            
-            try {
-                // Имитация деплоя
-                await simulateDeploy();
+            log(`🚀 Деплой ${currentRepo}...`);
+            setTimeout(() => log(`📦 Сборка...`), 500);
+            setTimeout(() => log(`🌐 Загрузка на сервер...`), 1000);
+            setTimeout(() => {
+                log(`✅ Сайт задеплоен!`);
+                log(`🔗 Открыть: ${repo.url}`);
                 
-                // Обновляем статистику
-                const newDeployCount = (currentRepo.deployCount || 0) + 1;
-                await db.collection('repositories').doc(currentRepo.id).update({
-                    lastDeployed: firebase.firestore.FieldValue.serverTimestamp(),
-                    deployCount: newDeployCount
-                });
-                
-                // Обновляем локальные данные
-                currentRepo.deployCount = newDeployCount;
-                
-                // Обновляем UI
-                deployBtn.innerHTML = '<i class="fas fa-check"></i> ЗАДЕПЛОЕНО';
-                setTimeout(() => {
-                    deployBtn.innerHTML = '<i class="fas fa-rocket"></i> ДЕПЛОЙ';
-                    deployBtn.disabled = false;
-                }, 2000);
-                
-                addToTerminal(`[PUBLIC]: Сайт задеплоен публично!`);
-                addToTerminal(`[PUBLIC]: ${currentRepo.url}`);
-                
-                document.getElementById('deploy-status').textContent = 
-                    `Последний деплой: ${new Date().toLocaleTimeString()}`;
-                
-                updateDashboardStats();
-                
-            } catch (error) {
-                deployBtn.innerHTML = '<i class="fas fa-times"></i> ОШИБКА';
-                setTimeout(() => {
-                    deployBtn.innerHTML = '<i class="fas fa-rocket"></i> ДЕПЛОЙ';
-                    deployBtn.disabled = false;
-                }, 2000);
-                
-                addToTerminal(`[ERROR]: Ошибка деплоя`);
+                // Показываем ссылку
+                if (confirm(`Сайт готов!\n\nОткрыть ${repo.url} ?`)) {
+                    window.open(`/${currentRepo}`, '_blank');
+                }
+            }, 1500);
+        }
+
+        // Загрузить репозитории из localStorage
+        function loadRepos() {
+            const saved = localStorage.getItem('vertexmain_repos');
+            if (saved) {
+                repos = JSON.parse(saved);
+                updateReposList();
             }
         }
 
-        // Имитация деплоя
-        async function simulateDeploy() {
-            return new Promise((resolve) => {
-                const term = document.getElementById('vrtx-term');
-                
-                setTimeout(() => {
-                    addToTerminal(`[BUILD]: Сборка публичного сайта...`);
-                }, 500);
-                
-                setTimeout(() => {
-                    addToTerminal(`[UPLOAD]: Загрузка на публичный сервер...`);
-                }, 1000);
-                
-                setTimeout(() => {
-                    addToTerminal(`[CDN]: Обновление кеша...`);
-                }, 1500);
-                
-                setTimeout(() => {
-                    addToTerminal(`[PUBLIC]: Сайт доступен всем!`);
-                }, 2000);
-                
-                setTimeout(() => {
-                    resolve();
-                }, 2500);
-            });
+        // Сохранить репозитории в localStorage
+        function saveRepos() {
+            localStorage.setItem('vertexmain_repos', JSON.stringify(repos));
         }
 
-        // Показать дашборд
-        function showDashboard() {
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('editor-view').classList.add('hidden');
-        }
-
-        // Показать редактор
-        function showEditorView() {
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('editor-view').classList.remove('hidden');
-        }
-
-        // Обновление статистики
-        function updateDashboardStats() {
-            document.getElementById('repo-count').textContent = repositories.length;
+        // Обновить список репозиториев
+        function updateReposList() {
+            const list = document.getElementById('repos-list');
+            list.innerHTML = '';
             
-            const totalDeploys = repositories.reduce((sum, repo) => sum + (repo.deployCount || 0), 0);
-            document.getElementById('deploy-count').textContent = totalDeploys;
-            
-            // Случайное число онлайн пользователей
-            document.getElementById('online-count').textContent = Math.floor(Math.random() * 50) + 10;
-        }
-
-        // Загрузка файлов
-        async function uploadFiles(fileList) {
-            if (!currentRepo) {
-                addToTerminal('[ERROR]: Сначала откройте репозиторий');
-                return;
-            }
-            
-            for (const file of fileList) {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    files[file.name] = e.target.result;
-                    
-                    if (!currentFile) {
-                        currentFile = file.name;
-                        loadFile(currentFile);
-                    }
-                    
-                    updateFileTabs();
-                    await saveFile();
-                    addToTerminal(`[PUBLIC]: Файл "${file.name}" загружен публично`);
-                };
-                reader.readAsText(file);
+            for (const repoName in repos) {
+                const repo = repos[repoName];
+                const div = document.createElement('div');
+                div.className = 'repo-item';
+                div.innerHTML = `
+                    <strong>${repoName}</strong><br>
+                    <small style="color: #666;">${repo.owner}</small>
+                `;
+                
+                div.onclick = () => openRepo(repoName);
+                list.appendChild(div);
             }
         }
 
-        // Выход
-        function logout() {
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('login-overlay').classList.remove('hidden');
-            document.getElementById('username-input').value = '';
-        }
-
-        // Добавление в терминал
-        function addToTerminal(text) {
-            const terminal = document.getElementById('vrtx-term');
-            terminal.innerHTML += '\n' + text;
+        // Логирование
+        function log(message) {
+            const terminal = document.getElementById('terminal');
+            terminal.innerHTML += '\n' + message;
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // Глобальные функции
-        window.startWithUsername = startWithUsername;
-        window.goBackToLogin = goBackToLogin;
-        window.createNewRepo = createNewRepo;
-        window.registerRepo = registerRepo;
-        window.showAllRepos = showAllRepos;
-        window.showDashboard = showDashboard;
-        window.saveFile = saveFile;
-        window.triggerDeploy = triggerDeploy;
-        window.uploadFiles = uploadFiles;
-        window.logout = logout;
+        // Запускаем при загрузке
+        window.onload = function() {
+            // Авто-старт через 1 секунду если есть имя
+            setTimeout(() => {
+                if (!document.getElementById('login-overlay').classList.contains('hidden')) {
+                    startApp();
+                }
+            }, 1000);
+        };
     </script>
 </body>
 </html>
