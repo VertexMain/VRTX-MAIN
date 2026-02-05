@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VertexMain Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --panel-bg: #0f0f0f;
+            --border: #333;
+            --neon-green: #00ff9d;
+            --dim-green: rgba(0, 255, 157, 0.1);
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR (Навигация) --- */
+        .sidebar {
+            width: 260px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            cursor: pointer;
+        }
+
+        .brand img {
+            width: 40px;
+            margin-right: 10px;
+            filter: drop-shadow(0 0 5px var(--neon-green));
+        }
+
+        .brand span {
+            font-family: 'Dela Gothic One', cursive;
+            color: var(--neon-green);
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item i { margin-right: 12px; width: 20px; text-align: center; }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--dim-green);
+            color: var(--neon-green);
+            border-left: 3px solid var(--neon-green);
+        }
+
+        .user-profile {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #333;
+            margin-right: 10px;
+            border: 2px solid var(--neon-green);
+        }
+
+        /* --- MAIN CONTENT (Рабочая зона) --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Фоновая сетка */
+        .grid-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(#111 1px, transparent 1px),
+                              linear-gradient(90deg, #111 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Секции (страницы) */
+        .page-section {
+            display: none; /* Скрываем все страницы по умолчанию */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .page-section.active {
+            display: block; /* Показываем активную */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-family: 'Dela Gothic One', cursive;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-new {
+            background: var(--neon-green);
+            color: black;
+            border: none;
+            padding: 5px 15px;
+            font-family: 'Dela Gothic One';
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        /* Карточки репозиториев */
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .repo-card {
+            background: #111;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .repo-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-2px);
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--neon-green);
+            font-weight: bold;
+        }
+
+        .repo-stats {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Вкладка контрибьюций (кубики) */
+        .contrib-graph {
+            display: flex;
+            gap: 3px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .cube {
+            width: 12px; height: 12px;
+            background: #1a1a1a;
+            border-radius: 2px;
+        }
+        .cube.l1 { background: #0e4429; }
+        .cube.l2 { background: #006d32; }
+        .cube.l3 { background: #26a641; }
+        .cube.l4 { background: #39d353; }
+
+        /* Консоль VRTX Plays */
+        .console {
+            background: #000;
+            padding: 20px;
+            border: 1px solid #333;
+            font-family: 'JetBrains Mono', monospace;
+            height: 300px;
+            overflow-y: auto;
+            color: #aaa;
+        }
+        .log-success { color: var(--neon-green); }
+        .log-warn { color: #ffcc00; }
+        .log-error { color: #ff4444; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand" onclick="showPage('dashboard')">
+            <img src="вертекс%20ма.png" alt="V">
+            <span>VertexMain</span>
+        </div>
+
+        <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+            <i class="fa-solid fa-house"></i> Dashboard
+        </div>
+        <div class="nav-item" onclick="showPage('repos')" id="nav-repos">
+            <i class="fa-solid fa-code"></i> Repositories
+        </div>
+        <div class="nav-item" onclick="showPage('plays')" id="nav-plays">
+            <i class="fa-solid fa-terminal"></i> VRTX Plays
+        </div>
+        <div class="nav-item" onclick="showPage('pulls')" id="nav-pulls">
+            <i class="fa-solid fa-code-pull-request"></i> Sys Merges
+        </div>
+        <div class="nav-item" onclick="showPage('settings')" id="nav-settings">
+            <i class="fa-solid fa-gear"></i> System Config
+        </div>
+
+        <div class="user-profile">
+            <div class="user-avatar"></div>
+            <div>
+                <div style="color: white; font-weight: bold;">Genius Coder</div>
+                <div style="font-size: 0.8rem; color: #666;">@vertex_admin</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="grid-bg"></div>
+
+        <div id="dashboard" class="page-section active">
+            <h2>Overview <button class="btn-new">Edit Profile</button></h2>
+            <p style="color: #777;">Contribution Graph (Last 30 Days)</p>
+            <div class="contrib-graph" id="contrib-grid"></div>
+            
+            <h3 style="margin-top: 30px; color: var(--neon-green);">Recent Activity</h3>
+            <div style="border-left: 2px solid #333; padding-left: 20px;">
+                <p>🔨 Pushed to <b>main</b> in <b>vertex-core</b> <span style="color:#555; float:right;">2m ago</span></p>
+                <p>🚀 Deployed <b>VertexMain Site</b> to v6.rocks <span style="color:#555; float:right;">1h ago</span></p>
+                <p>⭐ Starred <b>DeepSeek-Coder</b> <span style="color:#555; float:right;">5h ago</span></p>
+            </div>
+        </div>
+
+        <div id="repos" class="page-section">
+            <h2>Repositories <button class="btn-new">+ NEW REPO</button></h2>
+            <input type="text" placeholder="Find a repository..." style="background: #111; border: 1px solid #333; padding: 10px; color: white; width: 100%; font-family: inherit; margin-bottom: 20px;">
+            
+            <div class="repo-grid">
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <i class="fa-solid fa-book-bookmark" style="margin-right: 10px;"></i> VertexMain.github.io
+                        <span style="margin-left: auto; border: 1px solid #333; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">Public</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #ccc;">Официальный портал системы VertexMain.</p>
+                    <div class="repo-stats">
+                        <span><i class="fa-solid fa-circle" style="color: #e34c26;"></i> HTML</span>
+                        <span><i class="fa-regular fa-star"></i> 12</span>
+                        <span><i class="fa-solid fa-code-branch"></i> 3</span>
+                    </div>
+                </div>
+
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <i class="fa-solid fa-book-bookmark" style="margin-right: 10px;"></i> minecraft-server-core
+                    </div>
+                    <p style="font-size: 0.9rem; color: #ccc;">Сборка плагинов и конфигов для выживания.</p>
+                    <div class="repo-stats">
+                        <span><i class="fa-solid fa-circle" style="color: #b07219;"></i> Java</span>
+                        <span><i class="fa-regular fa-star"></i> 5</span>
+                    </div>
+                </div>
+                
+                 <div class="repo-card">
+                    <div class="repo-header">
+                        <i class="fa-solid fa-lock" style="margin-right: 10px;"></i> secret-vertex-bot
+                        <span style="margin-left: auto; border: 1px solid #333; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">Private</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #ccc;">AI бот для администрирования.</p>
+                    <div class="repo-stats">
+                        <span><i class="fa-solid fa-circle" style="color: #3572A5;"></i> Python</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="plays" class="page-section">
+            <h2>VRTX Plays (Actions)</h2>
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="width: 200px; border-right: 1px solid #333;">
+                    <p style="color: var(--neon-green);">All workflows</p>
+                    <p style="color: #666;">pages-build-deployment</p>
+                    <p style="color: #666;">codeql-analysis</p>
+                </div>
+                <div style="flex: 1;">
+                    <div class="console" id="console-output">
+                        <div>> Initializing VRTX Engine...</div>
+                        <div>> Loading workflow: production_deploy</div>
+                        <div class="log-warn">> Warning: npm version mismatch, using local</div>
+                        <div class="log-success">> Build started...</div>
+                        <div>[cpu] Allocating resources... OK</div>
+                        <div>[net] Fetching dependencies... OK</div>
+                        <div class="log-success">> VRTX Plays completed successfully in 4s.</div>
+                        <div class="log-text blink">_</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="settings" class="page-section">
+             <h2>System Configuration</h2>
+             <div style="max-width: 600px;">
+                 <p>Profile Name</p>
+                 <input type="text" value="Genius Coder" style="background: #111; border: 1px solid #333; padding: 10px; width: 100%; color: var(--neon-green);">
+                 
+                 <p>Public Email</p>
+                 <input type="text" value="admin@v6.rocks" style="background: #111; border: 1px solid #333; padding: 10px; width: 100%; color: white;">
+                 
+                 <p style="margin-top: 30px; color: #ff4444;">Danger Zone</p>
+                 <button style="background: transparent; border: 1px solid #ff4444; color: #ff4444; padding: 10px 20px; cursor: pointer;">Delete VertexMain System</button>
+             </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // 1. Скрываем все секции
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // 2. Убираем подсветку кнопок
+            const navs = document.querySelectorAll('.nav-item');
+            navs.forEach(nav => nav.classList.remove('active'));
+            
+            // 3. Показываем нужную
+            document.getElementById(pageId).classList.add('active');
+            
+            // 4. Подсвечиваем кнопку в меню
+            const activeNav = document.getElementById('nav-' + pageId);
+            if(activeNav) activeNav.classList.add('active');
+        }
+
+        // Генерация кубиков активности (для красоты)
+        const grid = document.getElementById('contrib-grid');
+        for(let i=0; i<160; i++) {
+            let div = document.createElement('div');
+            div.className = 'cube';
+            // Случайный цвет активности
+            if(Math.random() > 0.8) div.classList.add('l' + Math.ceil(Math.random()*4));
+            grid.appendChild(div);
+        }
+    </script>
+</body>
+</html>
